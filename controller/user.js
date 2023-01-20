@@ -1,7 +1,7 @@
 
  const bcrypt = require('bcrypt');
  const jwt = require('jsonwebtoken');
-const { default: mongoose } = require('mongoose');
+const mongoose  = require('mongoose');
  const userModel = require('../models/user');
  const secretkey = "API";
 
