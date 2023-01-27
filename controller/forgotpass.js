@@ -21,13 +21,17 @@ LiveController.forgotpass = async (req, res) => {
       if (!existingUser) {
          return res.status(404).json({ message: 'User not found' });
       }
+      if(existingUser.token){
+         await token.deleteOne();
+      };
+
       const secret = secretkey + existingUser.password;
       const payload = ({
          email: existingUser.email,
          id: existingUser.id
       });
-      const token = jwt.sign(payload, secretkey, { expiresIn: '15m' });
-      const link = `https://localhost:5000/forgot-password/${existingUser._id}/${token}`
+      const newtoken = jwt.sign(payload, secretkey, { expiresIn: '15m' });
+      const link = `https://localhost:5000/forgot-password/${existingUser._id}/${newtoken}`
       console.log(link);
 
       const transporter = nodemailer.createTransport({
@@ -41,7 +45,7 @@ LiveController.forgotpass = async (req, res) => {
       const mailOptions = {
          to: req.body.email,
          subject: 'password reset link',
-         text: `Click here to reset :` + link,
+         text: `Click here to reset Password :` + link,
       };
 
       transporter.sendMail(mailOptions, function (error, info) {
