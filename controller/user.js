@@ -126,23 +126,23 @@ LiveController.updatepass = async (req, res) => {
       if (!existingUser) {
          return res.status(404).json({ message: 'User not found' });
       }
-      //   if(existingUser.password === req.body.oldpassword){
       const matchPassword = await bcrypt.compare(req.body.oldpassword, existingUser.password);
 
       if (!matchPassword) {
          return res.status(400).json({ message: 'Old Password is not matched' });
       }
-         const hashedupdatedpass = await bcrypt.hash(req.body.password, 10);
+      const salt = await bcrypt.genSalt(10);
+      const hashedupdatedpass = await bcrypt.hash(req.body.newpassword, salt)
+      console.log(hashedupdatedpass, 'passssssssssssssssssss')
 
-         const newtoken = jwt.sign({ email: existingUser.email }, secretkey);
-         userModel.updateMany({ $set: { password: hashedupdatedpass, token: newtoken } }, (error, result) => {
-            if (error) {
-               console.log(error);
-            }
+      const newtoken = await jwt.sign({ email: existingUser.email }, secretkey);
+      existingUser.update({ $set: { password: hashedupdatedpass, token: newtoken } }, (error, result) => {
+         if (error) {
+            console.log(error);
+         }
+      });
+      return res.status(201).json({ existingUser, token: newtoken });
 
-         });
-         return res.status(201).json({ existingUser, token: newtoken });
-      
    } catch (error) {
       console.log(error);
       res.status(500).json({
@@ -159,6 +159,15 @@ LiveController.resetpass = async (req, res) => {
       if (!existingUser) {
          return res.status(404).json({ message: 'User not found' });
       }
+      const salt = await bcrypt.genSalt(10);
+      const hashedupdatedpass = await bcrypt.hash(req.body.newpassword, salt)
+      const newtoken = await jwt.sign({ email: existingUser.email }, secretkey);
+      existingUser.update({ $set: { password: hashedupdatedpass, token: newtoken } }, (error, result) => {
+         if (error) {
+            console.log(error);
+         }
+      });
+      return res.status(201).json({ existingUser, token: newtoken });
 
    } catch (error) {
       console.log(error);
