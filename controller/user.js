@@ -37,6 +37,18 @@ LiveController.signup = async (req, res) => {
    }
 };
 
+LiveController.userlist = async (req, res) => {
+   try {
+      const existingUser = await userModel.find();
+      console.log(existingUser)
+      const totaluser = await userModel.count();
+      res.status(200).json([{Total_User:totaluser},{ users:existingUser }]);
+   } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Somthing went wrong' });
+   }
+}
+
 LiveController.login = async (req, res) => {
    try {
       console.log('llllllllllllllllllllllllll', req.body);
@@ -154,7 +166,7 @@ LiveController.updatepass = async (req, res) => {
 LiveController.resetpass = async (req, res) => {
    try {
 
-      const existingUser = await userModel.findOne({ email: req.body.email });
+      const existingUser = await userModel.findOne({ token: req.body.token });
       console.log(existingUser)
       if (!existingUser) {
          return res.status(404).json({ message: 'User not found' });

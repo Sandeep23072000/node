@@ -8,5 +8,6 @@ const api = require('../controller/user');
   router.post('/forgot-pass', api.forgotpass );
   router.post('/reset-pass', api.resetpass );
   router.post('/update-pass', api.updatepass );
+  router.get('/user-list', api.userlist );
 
 module.exports = router;
